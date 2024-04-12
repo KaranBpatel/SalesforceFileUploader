@@ -28,7 +28,7 @@ public with sharing class FileController {
 
 
     @AuraEnabled(cacheable=true)
-    public static List<ContentDocument> getFiles(Id id) {
+    public static List<ContentDocument> getFiles(recordId id) {
         List<String> fileNames = new List<String>();
         
         // Query ContentDocumentLinks associated with the Account
