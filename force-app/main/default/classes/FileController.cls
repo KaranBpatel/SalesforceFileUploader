@@ -1,10 +1,11 @@
 public with sharing class FileController {
-    
-    public static List<String> getFileNames(Account acc) {
+   // FileController.getFileNames('0015h00001ezA2SAAU');
+    @AuraEnabled(cacheable=true)
+    public static List<String> getFileNames(Id id) {
         List<String> fileNames = new List<String>();
         
         // Query ContentDocumentLinks associated with the Account
-        List<ContentDocumentLink> documentLinks = [SELECT ContentDocumentId FROM ContentDocumentLink WHERE LinkedEntityId = :acc.Id];
+        List<ContentDocumentLink> documentLinks = [SELECT ContentDocumentId FROM ContentDocumentLink WHERE LinkedEntityId = :id];
         
         // Retrieve ContentDocumentIds
         Set<Id> contentDocumentIds = new Set<Id>();
@@ -13,11 +14,13 @@ public with sharing class FileController {
         }
         
         // Query ContentDocuments to get file names
-        List<ContentDocument> documents = [SELECT Title FROM ContentDocument WHERE Id IN :contentDocumentIds];
-        
+        List<ContentDocument> documents = [SELECT Title,Id FROM ContentDocument WHERE Id IN :contentDocumentIds];
+        // List<ContentVersion> conv=[SELECT id,ContentUrl FROM ContentVersion WHERE ContentDocumentId];
+        // System.debug('conv : '+conv);
         // Extract file names
         for(ContentDocument doc : documents) {
             fileNames.add(doc.Title);
+            System.debug(doc.Id+'doc.Title: ' + doc.Title);
         }
         
         return fileNames;
