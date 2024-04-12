@@ -25,5 +25,24 @@ public with sharing class FileController {
         
         return fileNames;
     }
+
+    @AuraEnabled(cacheable=true)
+    public static map<id,String> getFilePreview(Id id)
+    {
+        List<ContentDocumentLink> condocId = [SELECT ContentDocumentId FROM ContentDocumentLink WHERE LinkedEntityId = :id];
+        List<id> docId= new List<id>();
+        for (ContentDocumentLink docLink : conDocId) {
+            docId.add(docLink.ContentDocumentId);
+        }
+        List<ContentVersion> docs= [SELECT ContentDocumentId, FileExtension, Title 
+        FROM ContentVersion WHERE ContentDocumentId IN : docId];
+        Map<Id,String> mapIdTitle = new Map<Id,String>();
+        for(ContentVersion dc:docs)
+        {
+            mapIdTitle.put(dc.ContentDocumentId,dc.Title);
+        }
+        System.debug('Log files'+mapIdTitle);
+        return mapIdTitle;
+    }
     
 }
